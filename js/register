@@ -1,0 +1,40 @@
+// Initialize Firebase
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+
+// Get a reference to the Firebase authentication service
+const auth = firebase.auth();
+
+// Register new user
+function registerUser(email, password, username, phone) {
+    auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // Save user profile to database
+            saveUserProfile(userCredential.user.uid, username, phone);
+            console.log("User registered successfully");
+        })
+        .catch((error) => {
+            console.log("Error registering user:", error.message);
+        });
+}
+
+// Save user profile to database
+function saveUserProfile(userId, username, phone) {
+    firebase.firestore().collection("userProfiles").doc(userId).set({
+        username: username,
+        phone: phone
+    })
+    .then(() => {
+        console.log("User profile saved successfully");
+    })
+    .catch((error) => {
+        console.log("Error saving user profile:", error.message);
+    });
+}
